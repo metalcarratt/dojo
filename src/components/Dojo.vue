@@ -55,7 +55,7 @@ const getImage = (trainingProgram, masterAnimation, role, energy) => {
 
 export default {
     components: { Canvas },
-    props: ["trainingProgram", "members", "expUp"],
+    props: ["trainingProgram", "members", "expUp", "speed"],
     data() {
         return {
             masterAnimation: 1
@@ -162,7 +162,7 @@ export default {
                 memberLayer.source = getImage(this.trainingProgram, this.masterAnimation, member.role, member.energy);
             }
             this.canvas.drawLayers();
-            setTimeout(() => this.animationLoop(), 800);
+            setTimeout(() => this.animationLoop(), this.speed * 100);
             this.$emit("loop");
         }
     }

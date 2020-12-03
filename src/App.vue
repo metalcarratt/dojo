@@ -9,11 +9,11 @@
                     <table>
                         <tr>
                             <th>Role</th>
-                            <th>Str</th>
-                            <th>Upp</th>
-                            <th>Low</th>
-                            <th>Def</th>
-                            <th>Eng</th>
+                            <th><font-awesome-icon icon="dumbbell" /></th>
+                            <th><font-awesome-icon icon="hand-rock" /></th>
+                            <th><font-awesome-icon icon="socks" /></th>
+                            <th><font-awesome-icon icon="shield-alt" /></th>
+                            <th><font-awesome-icon icon="bolt" /></th>
                             <th>Exp</th>
                         </tr>
                         <tr>
@@ -31,13 +31,21 @@
 
         </div>
 
-        <Dojo :trainingProgram="trainingProgram" @loop="onecycle" :members="members" :expUp="expUp" />
+        <Dojo :trainingProgram="trainingProgram" @loop="onecycle" :members="members" :expUp="expUp" :speed="speed" />
 
         <div class="sidebar">
             <h2>Training Program</h2>
             <select v-model="trainingProgram">
                 <option v-for="state in states" :key="state">{{ state }}</option>
             </select>
+
+            <h2>Settings</h2>
+            <label>Speed: </label>
+            <button @click="speed = speed - 1">-</button>
+            {{ speed }}
+            <button @click="speed = speed + 1">+</button>
+            (lower is faster)
+            
         </div>
     </div>
 </template>
@@ -68,8 +76,8 @@ const newMember = (id, role, name, position)=> {
 }
 
 const calculateExperience = (member, statName, expName, text, expUp) => {
-    member[expName] = member[expName] + 1;
     if (member.energy > 0) {
+        member[expName] = member[expName] + 1;
         member.energy = member.energy - 1;
         if (member[expName] === (member[statName] + 1) * 5) {
             member[statName] = member[statName] + 1;
@@ -90,7 +98,8 @@ export default {
             states: training.trainingRegimes,
             members: [],
             cycle: 0,
-            expUp: []
+            expUp: [],
+            speed: 8
         }
     },
     mounted() {
@@ -164,5 +173,34 @@ h1 {
     vertical-align: top;
     padding-left: 40px;
     padding-right: 40px;
+}
+
+.svg-inline--fa {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+td {
+    text-align: center;
+}
+
+.fa-dumbbell {
+    color: #d0a80a;
+}
+
+.fa-hand-rock {
+    color: #b70000;
+}
+
+.fa-socks {
+    color: #42429f;
+}
+
+.fa-shield-alt {
+    color: green;
+}
+
+.fa-bolt {
+    color: #e65a2f;
 }
 </style>
