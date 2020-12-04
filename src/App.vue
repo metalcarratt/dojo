@@ -46,6 +46,17 @@
             <button @click="speed = speed + 1">+</button>
             (lower is faster)
             
+            <h2>Goals</h2>
+            <div class="goal" v-for="(goal, gindex) in goals" :key="gindex">
+                <h3>{{ goal.name }}</h3>
+                <p>{{ goal.detail }}</p>
+            </div>
+
+            <div class="goal completed" v-for="(goal, cindex) in completedGoals" :key="cindex">
+                <h3>{{ goal.name }}</h3>
+                <font-awesome-icon icon="check" />
+            </div>
+            
         </div>
     </div>
 </template>
@@ -53,6 +64,7 @@
 <script>
 import Dojo from "@/components/Dojo.vue";
 import training from "@/components/training.js";
+import goals from "@/components/goals.js";
 
 const ROLE_TRAINER = "Trainer";
 const ROLE_STUDENT = "Student";
@@ -71,7 +83,8 @@ const newMember = (id, role, name, position)=> {
         defence: 0,
         defenceExperience: 0,
         energy: 20,
-        position
+        position,
+        goals: []
     };
 }
 
@@ -99,7 +112,9 @@ export default {
             members: [],
             cycle: 0,
             expUp: [],
-            speed: 8
+            speed: 8,
+            goals: [],
+            completedGoals: []
         }
     },
     mounted() {
@@ -107,6 +122,8 @@ export default {
         trainer.strength = 10;
         this.members.push(trainer);
         this.members.push(newMember(2, ROLE_STUDENT, "Sam", { x: 2, y: 3 }));
+
+        this.goals.push(goals.goal1);
     },
     computed: {
         squating() {
@@ -126,6 +143,15 @@ export default {
         }
     },
     methods: {
+        checkCompleted(goal) {
+            const completed = goal.completed(this.members);
+            if (completed) {
+                this.goals.splice(this.goals.indexOf(goal), 1);
+                this.completedGoals.unshift(goal);
+                this.goals = this.goals.concat(goal.next());
+            }
+            return completed;
+        },
         onecycle() {
             this.cycle = this.cycle + 1;
             if (this.cycle > 1) {
@@ -136,8 +162,8 @@ export default {
         oneturn() {
             this.expUp = [];
             this.members
-                .filter((member) => member.role === ROLE_STUDENT)
-                .forEach((member) => {
+                .filter(member => member.role === ROLE_STUDENT)
+                .forEach(member => {
                     if (this.squating) {
                         calculateExperience(member, "strength", "strengthExperience", "Str", this.expUp);
                     } else if (this.kicking) {
@@ -150,6 +176,9 @@ export default {
                         member.energy = member.energy + 2;
                     }
                 });
+            this.goals.forEach(goal => {
+                this.checkCompleted(goal);
+            });
         }
     }
 
@@ -202,5 +231,24 @@ td {
 
 .fa-bolt {
     color: #e65a2f;
+}
+
+.goal {
+    border: 1px solid black;
+    padding: 4px;
+    background-color: #ffffc0;
+    margin-bottom: 4px;
+}
+.goal.completed {
+    background-color: #80eb80;
+}
+.goal.completed .fa-check {
+    float: right;
+    margin-top: -40px;
+    color: #184f08;
+    font-size: 18px;
+}
+.goal h3 {
+    margin-top: 0;
 }
 </style>
